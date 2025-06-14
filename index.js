@@ -14,9 +14,9 @@ const port = process.env.PORT || 3000;
 // CORS configuration
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
+    ? ['https://code-crafters-react-frontend.vercel.app', 'https://code-crafters-react-frontend-kuf3.vercel.app']
     : 'http://localhost:5173',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
   optionsSuccessStatus: 200
 };
