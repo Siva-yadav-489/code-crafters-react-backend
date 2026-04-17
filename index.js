@@ -1,9 +1,9 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const nodemailer = require('nodemailer');
-const fs = require('fs');
-const path = require('path');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const nodemailer = require("nodemailer");
+const fs = require("fs");
+const path = require("path");
 const proposalPrompts = require("./main-prompt");
 
 const PDFDocument = require("pdfkit");
@@ -13,12 +13,16 @@ const port = process.env.PORT || 3000;
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://code-crafters-react-frontend.vercel.app', 'https://code-crafters-react-frontend-kuf3.vercel.app']
-    : 'http://localhost:5173',
-  methods: ['GET', 'POST', 'OPTIONS'],
+  origin:
+    process.env.NODE_ENV === "production"
+      ? [
+          "https://code-crafters-react-frontend.vercel.app",
+          "https://code-crafters-react-frontend-kuf3.vercel.app",
+        ]
+      : "http://localhost:5173",
+  methods: ["GET", "POST", "OPTIONS"],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -31,28 +35,29 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Initialize email transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message 
+  res.status(500).json({
+    error:
+      process.env.NODE_ENV === "production"
+        ? "Internal server error"
+        : err.message,
   });
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get("/api/health", (req, res) => {
   res.json({
-    status: 'ok',
-    environment: process.env.NODE_ENV || 'development'
+    status: "ok",
+    environment: process.env.NODE_ENV || "development",
   });
 });
 
@@ -105,7 +110,7 @@ const chatHistory = [
 async function chatWithGemini(question) {
   try {
     chat = ai.chats.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-3.1-flash-lite-preview",
       history: chatHistory,
       config: {
         maxOutputTokens: 350,
@@ -189,7 +194,7 @@ app.post("/api/chat", async (req, res) => {
 app.post("/api/mail", async (req, res) => {
   try {
     const receiver = req.body.mailid;
-    if (!receiver || !receiver.includes('@')) {
+    if (!receiver || !receiver.includes("@")) {
       return res.status(400).json({ error: "Invalid email address" });
     }
 
@@ -217,5 +222,7 @@ app.post("/api/mail", async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
+  console.log(
+    `Server running in ${process.env.NODE_ENV || "development"} mode on port ${port}`,
+  );
 });
